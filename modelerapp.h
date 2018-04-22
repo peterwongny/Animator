@@ -81,8 +81,9 @@ private:
 	static void RedrawLoop(void*);
 
 	// Just a flag for updates
+public:
 	bool m_animating;
-
+private:
 	// Particle System variables
 	ParticleSystem *ps;
 };
