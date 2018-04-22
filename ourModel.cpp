@@ -756,6 +756,7 @@ void SampleModel::draw()
 	
 		
 	glPopMatrix();
+	endDraw();
 }
 
 int main()
