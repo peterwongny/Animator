@@ -1,0 +1,12 @@
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+
+#User-specific files
+impressionist.VC.db
+*.VC.opendb
+*.VC.db
+*.suo
+.vs/impressionist/v14/.suo
