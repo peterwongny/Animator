@@ -3,6 +3,8 @@
 #include "vec.h"
 
 
+#define SEGMENT 30
+
 void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts, std::vector<Point>& ptvEvaluatedCurvePts, const float & fAniLength, const bool & bWrap) const
 {
 	vector<Point> my_ptvCtrlPts(ptvCtrlPts);
@@ -21,6 +23,7 @@ void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts, s
 	int pointIndex = 0;
 	for (pointIndex = 0; pointIndex+3 < iCtrlPtCount; pointIndex += 3) {
 		ptvEvaluatedCurvePts.push_back(my_ptvCtrlPts[pointIndex]);
+		ptvEvaluatedCurvePts.push_back(my_ptvCtrlPts[pointIndex + 3]);
 		const Vec4d px(my_ptvCtrlPts[pointIndex].x, my_ptvCtrlPts[pointIndex + 1].x, my_ptvCtrlPts[pointIndex + 2].x, my_ptvCtrlPts[pointIndex + 3].x);
 		const Vec4d py(my_ptvCtrlPts[pointIndex].y, my_ptvCtrlPts[pointIndex + 1].y, my_ptvCtrlPts[pointIndex + 2].y, my_ptvCtrlPts[pointIndex + 3].y);
 		//haven't 4*2 matrix?
@@ -32,11 +35,10 @@ void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts, s
 			const Vec4d B = vecT*M;
 			Point Q = Point(B*px, B*py); //1x4 x 4x4 x 4x1
 			if(Q.x>fAniLength&&bWrap) {//the wrapped point
-				Q.x = Q.x - fAniLength;
+				Q.x = fmod(Q.x, fAniLength);
 			}
 			ptvEvaluatedCurvePts.push_back(Q);
 		}
-		ptvEvaluatedCurvePts.push_back(my_ptvCtrlPts[pointIndex + 3]);
 	}
 
 	if(bWrap){
@@ -60,12 +62,13 @@ void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts, s
 		}
 	}
 	else {
-		//the first and last segments of the curve horizontal.
-		ptvEvaluatedCurvePts.push_back(Point(0, ptvCtrlPts[0].y));
-		for (; pointIndex < iCtrlPtCount; pointIndex++) {//adding the rest of points
+		//the first and last segments of the curve horizontal
+		for (; pointIndex < iCtrlPtCount; pointIndex++) { //adding the rest of points
 			ptvEvaluatedCurvePts.push_back(ptvCtrlPts[pointIndex]);
 		}
+		ptvEvaluatedCurvePts.push_back(Point(0, ptvCtrlPts[0].y));
 		ptvEvaluatedCurvePts.push_back(Point(fAniLength, ptvCtrlPts[pointIndex - 1].y));
+		//b-spline won't include the first and last points which is at the end
 	}
 
 }
