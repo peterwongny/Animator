@@ -105,6 +105,9 @@
     <ClCompile Include="InverseKinematics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BezierCurveEvaluator.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="curve.h">
@@ -172,6 +175,9 @@
     </ClInclude>
     <ClInclude Include="InverseKinematics.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BezierCurveEvaluator.h">
+      <Filter>Header Files\Curves.</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
