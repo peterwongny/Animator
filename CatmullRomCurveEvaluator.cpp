@@ -5,7 +5,7 @@
 void CatmullRomCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts, std::vector<Point>& ptvEvaluatedCurvePts, const float & fAniLength, const bool & bWrap) const
 {
 	ptvEvaluatedCurvePts.clear();
-
+	float tension = 1.0 / 2.0;
 	vector<Point> my_ptvCtrlPts;
 	if (bWrap) {
 		// add the last 2 points before starting point
@@ -18,10 +18,6 @@ void CatmullRomCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPt
 		my_ptvCtrlPts.push_back(Point((ptvCtrlPts.begin() + 1)->x + fAniLength, (ptvCtrlPts.begin() + 1)->y));
 	}
 	else {
-		/*my_ptvCtrlPts.push_back(Point(0, ptvCtrlPts.front().y));
-		my_ptvCtrlPts.insert(my_ptvCtrlPts.end(), ptvCtrlPts.begin(), ptvCtrlPts.end());
-		my_ptvCtrlPts.push_back(Point(fAniLength, ptvCtrlPts.back().y));*/
-
 		my_ptvCtrlPts.push_back(ptvCtrlPts.front());
 		my_ptvCtrlPts.insert(my_ptvCtrlPts.end(), ptvCtrlPts.begin(), ptvCtrlPts.end());
 		my_ptvCtrlPts.push_back(ptvCtrlPts.back());
@@ -33,11 +29,12 @@ void CatmullRomCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPt
 	
 	int iCtrlPtCount = my_ptvCtrlPts.size();
 
-	Mat4d M = Mat4d(
-		-1, 3, -3, 1,
-		2, -5, 4, -1,
-		-1, 0, 1, 0,
-		0, 2, 0, 0) / 2.0;
+	// reference: http://algorithmist.net/docs/catmullrom.pdf
+	Mat4d M(
+		-tension, 2- tension, tension-2, tension,
+		2* tension, tension-3, 3-2* tension, -tension,
+		-tension, 0, tension, 0,
+		0, 1, 0, 0);
 
 	//below script is nearly copy from berizer, only change the +=3 to ++ since catmull have continuity
 
