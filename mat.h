@@ -110,7 +110,7 @@ template <class T>
 class Mat4 {
 
 	//---[ Private Variable Declarations ]-----------------
-
+public: //enable access for curveEvaluator
 		// matrix elements in row-major order
 	T		n[16];
 
