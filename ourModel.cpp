@@ -532,7 +532,12 @@ void SampleModel::draw()
 						if (VAL(LOD) >2) {
 						glPushMatrix();
 							glTranslated(0.0, 0, armLength);
-							if (!VAL(CHANGEHANDS))drawCylinder(armLength, armRadius, armRadius); 
+							if (!VAL(CHANGEHANDS)) { 
+								glPushMatrix();
+								glRotated(VAL(RIGHTHANDANGLE), 1, 0, 0);
+								drawCylinder(armLength, armRadius, armRadius);
+								glPopMatrix();
+							}
 							else {
 								drawCylinder(armLength*1.2, armRadius, armRadius * 2.5);
 								if (VAL(LOD)>3){//L-system
@@ -824,6 +829,7 @@ int main()
     controls[XPOS] = ModelerControl("X Position", -5, 5, 0.1f, 0);
     controls[YPOS] = ModelerControl("Y Position", 0, 5, 0.1f, 0);
     controls[ZPOS] = ModelerControl("Z Position", -5, 5, 0.1f, 0);
+	controls[RIGHTHANDANGLE] = ModelerControl("Right Hand Angle", -180, 0, 1, 0.0);
 	controls[HEADRADIUS] = ModelerControl("Head Radius", 0.5, 1.5, 0.1f, 0.9f);
 	controls[HEADSCALE] = ModelerControl("Head Y-Sccale", 1, 1.5, 0.1f, 1.2f);
 	controls[BODYTHICKNESS] = ModelerControl("Body Thickness", 8, 18, 1, 13.0);
