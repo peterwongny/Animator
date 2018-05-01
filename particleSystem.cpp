@@ -141,11 +141,16 @@ void ParticleSystem::computeForcesAndUpdateParticles(float t)
 					new_particle.x[1] = world_corr[1];
 					new_particle.x[2] = world_corr[2];
 
+					Vec4d world_speed = get_world_cord(rx, ry, rz+10);
 
-					// initial velocity
-					new_particle.v[0] = rx;
-					new_particle.v[1] = ry;
-					new_particle.v[2] = rz;
+					//initial velocity
+					new_particle.v[0] = world_speed[0];
+					new_particle.v[1] = world_speed[1];
+					new_particle.v[2] = world_speed[2];
+
+					//new_particle.v[0] = rx;
+					//new_particle.v[1] = ry;
+					//new_particle.v[2] = rz;
 
 					particles.push_back(new_particle);
 
@@ -172,10 +177,10 @@ void ParticleSystem::computeForcesAndUpdateParticles(float t)
 				}
 
 			}
-
+			bakeParticles(t);
 		}
 
-		bakeParticles(t);
+
 
 
 
@@ -189,6 +194,12 @@ Vec4d ParticleSystem::get_world_cord(double x, double y, double z) {
 	Vec4d localCoord(x, y, z, 1.0);
 
 	return trans_matrix*localCoord;
+}
+
+Vec4d ParticleSystem::get_speed(double x, double y, double z)
+{
+	Vec4d localCoord(x, y, z, 1.0);
+	return trans_matrix_v*localCoord;
 }
 
 

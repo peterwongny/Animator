@@ -79,6 +79,7 @@ public:
 	void setDirty(bool d) { dirty = d; }
 
 	void setTrans_matrix(const Mat4d& m) { trans_matrix = m; }
+	void setTrans_matrix_v(const Mat4d& m) { trans_matrix_v = m; }
 
 protected:
 	
@@ -93,14 +94,14 @@ protected:
 	int max_particles;
 
 	Mat4d trans_matrix;
+	Mat4d trans_matrix_v;
 
 	int get_frame(double t) { return round(t * bake_fps); }
 
 
 
 	Vec4d get_world_cord(double x, double y, double z);
-
-	Particle newParticle();
+	Vec4d get_speed(double x, double y, double z);
 
 	/** Some baking-related state **/
 	float bake_fps;						// frame rate at which simulation was baked

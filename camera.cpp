@@ -140,7 +140,7 @@ Camera::Camera()
 {
 	mAzimuth = mTwist = 0.0f;
 	mElevation = 0.7f;
-	mDolly = -20.0f;
+	mDolly = -50.0f;
 
 	mLookAt = Vec3f( 0, 0, 0 );
 

@@ -462,9 +462,9 @@ void SampleModel::draw()
 				0,0,1,0,
 				0,0,0,1 };
 
-			Mat4d body_rot = { cos(VAL(UPPERBODYANGLE) + anim_upperBody_angle),0,sin(VAL(UPPERBODYANGLE) + anim_upperBody_angle),0,
+			Mat4d body_rot = { cos((VAL(UPPERBODYANGLE) + anim_upperBody_angle) / 180 * M_PI),0,sin((VAL(UPPERBODYANGLE) + anim_upperBody_angle) / 180 * M_PI),0,
 				0,1,0,0,
-				-sin(VAL(UPPERBODYANGLE) + anim_upperBody_angle),0,cos(VAL(UPPERBODYANGLE) + anim_upperBody_angle),0,
+				-sin((VAL(UPPERBODYANGLE) + anim_upperBody_angle) / 180 * M_PI),0,cos((VAL(UPPERBODYANGLE) + anim_upperBody_angle) / 180 * M_PI),0,
 				0,0,0,1 };
 
 
@@ -592,15 +592,36 @@ void SampleModel::draw()
 
 							Mat4d left_arm4 = { 1,0,0,0,
 								0,1,0,0,
-								0,0,1, armLength*2,
+								0,0,1, armLength,
 								0,0,0,1 };
 
 
-							//ps
-							Mat4d leftHandOffSet = model_offset * body_trans*body_rot*left_arm1*left_arm2*left_arm3*left_arm4;
-							left_head_ps->setTrans_matrix(leftHandOffSet);
+							
+							
 
-							if (!VAL(CHANGEHANDS))drawCylinder(armLength, armRadius, armRadius);
+							if (!VAL(CHANGEHANDS)) {
+								glPushMatrix();
+								glRotated(VAL(LEFTHANDANGLE), 1, 0, 0);
+
+								Mat4d left_arm5 = { 1,0,0,0,
+									0,cos(VAL(LEFTHANDANGLE)/180*M_PI),-sin(VAL(LEFTHANDANGLE) / 180 * M_PI),0,
+									0,sin(VAL(LEFTHANDANGLE) / 180 * M_PI),cos(VAL(LEFTHANDANGLE) / 180 * M_PI),0,
+									0,0,0,1 };
+
+								//the translation to the end of the arm
+								Mat4d left_arm6 = { 1,0,0,0,
+									0,1,0,0,
+									0,0,1, armLength,
+									0,0,0,1 };
+
+								//ps
+								Mat4d leftHandOffSet = model_offset * body_trans*body_rot*left_arm1*left_arm2*left_arm3*left_arm4*left_arm5*left_arm6;
+								left_head_ps->setTrans_matrix(leftHandOffSet);
+								left_head_ps->setTrans_matrix_v(left_arm5);
+
+								drawCylinder(armLength, armRadius, armRadius);
+								glPopMatrix();
+							}
 							else {
 								drawCylinder(armLength * 1.2, armRadius, armRadius * 2.5);
 								if (VAL(LOD)>3) {//L-system
@@ -620,6 +641,7 @@ void SampleModel::draw()
 		glPopMatrix();//end of upper body
 		//lower body
 		glPushMatrix();
+		glRotated(180, 0, 1, 0);
 			setDiffuseColor(clothesColor[0], clothesColor[1], clothesColor[2]);
 			glTranslated(0, footHeight + legHeight + thighHeight + hipShift / 2, 0.0);
 			if (VAL(LOD) >0) {
@@ -829,7 +851,8 @@ int main()
     controls[XPOS] = ModelerControl("X Position", -5, 5, 0.1f, 0);
     controls[YPOS] = ModelerControl("Y Position", 0, 5, 0.1f, 0);
     controls[ZPOS] = ModelerControl("Z Position", -5, 5, 0.1f, 0);
-	controls[RIGHTHANDANGLE] = ModelerControl("Right Hand Angle", -180, 0, 1, 0.0);
+	controls[LEFTHANDANGLE] = ModelerControl("Left Hand Angle", -90, 180, 1, 0.0);
+	controls[RIGHTHANDANGLE] = ModelerControl("Right Hand Angle", -90, 180, 1, 0.0);
 	controls[HEADRADIUS] = ModelerControl("Head Radius", 0.5, 1.5, 0.1f, 0.9f);
 	controls[HEADSCALE] = ModelerControl("Head Y-Sccale", 1, 1.5, 0.1f, 1.2f);
 	controls[BODYTHICKNESS] = ModelerControl("Body Thickness", 8, 18, 1, 13.0);
