@@ -314,11 +314,13 @@ void legTexture(GLuint textureID) {
 // To make a SampleModel, we inherit off of ModelerView
 class SampleModel : public ModelerView 
 {
-
+	ParticleSystem* left_head_ps;
 	InverseKinematics leftLegIK;
 public:
     SampleModel(int x, int y, int w, int h, char *label) 
         : ModelerView(x,y,w,h,label) {	
+		left_head_ps = new ParticleSystem();
+		ModelerApplication::Instance()->SetParticleSystem(left_head_ps);
 	}
 
 	~SampleModel() {
@@ -417,6 +419,11 @@ void SampleModel::draw()
 	setAmbientColor(.1f,.1f,.1f);
 	glPushMatrix();
 	glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
+	Mat4d model_offset = { 1,0,0,VAL(XPOS),
+		0,1,0,VAL(YPOS),
+		0,0,1,VAL(ZPOS),
+		0,0,0,1 };
+
 		float skinColor[3] = { (float)243 / 255, (float)225 / 255, (float)210 / 255 };
 		float clothesColor[3] = { (float)15 / 255, (float)10 / 255, (float)10 / 255 };
 
@@ -449,6 +456,18 @@ void SampleModel::draw()
 		glPushMatrix();
 			glTranslated(0, footHeight+ legHeight+ thighHeight+ hipShift / 2 + waistHeight_lower+ waistHeight_upper+ chestHeight, 0.0);
 			glRotated(VAL(UPPERBODYANGLE)+anim_upperBody_angle, 0, 1, 0);
+
+			Mat4d body_trans = { 1,0,0,0,
+				0,1,0,footHeight + legHeight + thighHeight + hipShift / 2 + waistHeight_lower + waistHeight_upper + chestHeight,
+				0,0,1,0,
+				0,0,0,1 };
+
+			Mat4d body_rot = { cos(VAL(UPPERBODYANGLE) + anim_upperBody_angle),0,sin(VAL(UPPERBODYANGLE) + anim_upperBody_angle),0,
+				0,1,0,0,
+				-sin(VAL(UPPERBODYANGLE) + anim_upperBody_angle),0,cos(VAL(UPPERBODYANGLE) + anim_upperBody_angle),0,
+				0,0,0,1 };
+
+
 			//head and neck
 			glPushMatrix();
 				glTranslated(0.0, 2.0, 0.0);
@@ -528,11 +547,30 @@ void SampleModel::draw()
 					glPopMatrix();
 					glPushMatrix();//left arm
 						glTranslated(-torseWidth / 2 - armRadius, 0, 0);
+
+						Mat4d left_arm1 = { 1,0,0,-torseWidth / 2 - armRadius,
+							0,1,0,0,
+							0,0,1,0,
+							0,0,0,1 };
+
 						//shoulder
 						setDiffuseColor(clothesColor[0], clothesColor[1], clothesColor[2]);
 						glTranslated(0, -shoulderRadius, 0);
+
+						Mat4d left_arm2 = { 1,0,0,0,
+							0,1,0,-shoulderRadius,
+							0,0,1,0,
+							0,0,0,1 };
+
 						drawSphere(shoulderClothesRadius);
 						glRotated(90.0, 1.0, 0.0, 0.0);
+
+						Mat4d left_arm3 = { 1,0,0,0,
+							0,0,-1,0,
+							0,1,0,0,
+							0,0,0,1 };
+
+
 						//left upper arm
 						if (VAL(CHANGEHANDS)) {
 							setDiffuseColor(COLOR_GOLD);
@@ -546,6 +584,17 @@ void SampleModel::draw()
 						if (VAL(LOD) >2) {
 						glPushMatrix();
 							glTranslated(0.0, 0, armLength);
+
+							Mat4d left_arm4 = { 1,0,0,0,
+								0,1,0,0,
+								0,0,1, armLength*2,
+								0,0,0,1 };
+
+
+							//ps
+							Mat4d leftHandOffSet = model_offset * body_trans*body_rot*left_arm1*left_arm2*left_arm3*left_arm4;
+							left_head_ps->setTrans_matrix(leftHandOffSet);
+
 							if (!VAL(CHANGEHANDS))drawCylinder(armLength, armRadius, armRadius);
 							else {
 								drawCylinder(armLength * 1.2, armRadius, armRadius * 2.5);
@@ -731,7 +780,7 @@ void SampleModel::draw()
 				//leftLegIK.SetArmlength2(legHeight + footHeight);
 				//leftLegIK.SetQ(VAL(LEFTTHIGHANGLE_X), VAL(LEFTTHIGHANGLE), 0, VAL(LEFTLEGANGLE));
 				//leftLegIK.SetQ(ikResult[0], ikResult[1], ikResult[2], ikResult[3]);
-
+/*
 				Vec3f endpoint = leftLegIK.ForwardKinematics();
 
 				glPushMatrix();
@@ -746,7 +795,7 @@ void SampleModel::draw()
 				glTranslated(leftLegIK.joint[0] - 0.25, leftLegIK.joint[1] - 0.25, leftLegIK.joint[2] - 0.25);
 				drawBox(0.5, 0.5, 0.5);
 
-				glPopMatrix();
+				glPopMatrix();*/
 				//testend
 
 

@@ -17,8 +17,14 @@
 #define __PARTICLE_SYSTEM_H__
 
 #include "vec.h"
+#include "mat.h"
+#include <vector>
+#include <map>
+#include "particle.h"
+#include "modelerdraw.h"
 
-
+#include <FL/gl.h>
+#include <GL/glu.h>
 
 class ParticleSystem {
 
@@ -72,11 +78,29 @@ public:
 	bool isDirty() { return dirty; }
 	void setDirty(bool d) { dirty = d; }
 
-
+	void setTrans_matrix(const Mat4d& m) { trans_matrix = m; }
 
 protected:
 	
+	vector<Vec3d> forces;
 
+	vector<Particle> particles;
+
+	map<int, vector<Particle>> baked_frames;
+
+	int num_particles;
+
+	int max_particles;
+
+	Mat4d trans_matrix;
+
+	int get_frame(double t) { return round(t * bake_fps); }
+
+
+
+	Vec4d get_world_cord(double x, double y, double z);
+
+	Particle newParticle();
 
 	/** Some baking-related state **/
 	float bake_fps;						// frame rate at which simulation was baked
