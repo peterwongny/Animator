@@ -166,8 +166,9 @@ void ParticleSystem::computeForcesAndUpdateParticles(float t)
 
 					p.v += p.f *dt / p.m;
 
-					//force
+					//forces
 					p.f = Vec3d(0.0, -9.8, 0.0) * p.m;
+					p.f -= p.v * 0.011;
 
 					particles.push_back(p);
 
